@@ -10,6 +10,6 @@ class ProductModel {
 
   ProductModel.fromSnapshot(DocumentSnapshot snapshot)
       : name = snapshot['name'],
-        stock = int.parse(snapshot['stock']),
+        stock = int.parse(snapshot['stock'].toString()),
         createAt = snapshot['created_at'];
 }

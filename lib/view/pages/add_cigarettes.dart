@@ -54,7 +54,9 @@ class _AddCigarettesState extends State<AddCigarettes> {
                       });
                       productStock.text = '';
                       productName.text = '';
+
                       Get.back();
+                      setState(() {});
                     }
                   },
                 ),

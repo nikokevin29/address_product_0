@@ -19,6 +19,7 @@ class _CigarettesPageState extends State<CigarettesPage> {
   @override
   void initState() {
     super.initState();
+    getUsersPastTripsStreamSnapshots();
     _searchController.addListener(_onSearchChanged);
   }
 
@@ -72,6 +73,16 @@ class _CigarettesPageState extends State<CigarettesPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Stok Rokok'),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: InkWell(
+                onTap: () {
+                  getUsersPastTripsStreamSnapshots();
+                },
+                child: Icon(Icons.refresh)),
+          )
+        ],
       ),
       body: SingleChildScrollView(
         child: Container(
@@ -225,6 +236,7 @@ class _CigarettesPageState extends State<CigarettesPage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Get.to(() => AddCigarettes());
+          setState(() {});
         },
         child: FaIcon(FontAwesomeIcons.plus),
       ),
@@ -246,6 +258,93 @@ class _CigarettesPageState extends State<CigarettesPage> {
               subtitle: Text(
                 product.stock.toString(),
                 style: blackTextFont.copyWith(fontSize: 22),
+              ),
+              leading: GestureDetector(
+                  onTap: () => showDialog<String>(
+                        context: context,
+                        builder: (BuildContext context) => AlertDialog(
+                          title: const Text('Hapus Produk'),
+                          content: const Text(
+                              'Apakah anda yakin ingin menghapus produk ini ?'),
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, 'Cancel'),
+                              child: const Text('Batal'),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                FirebaseFunction.deleteProduct(id: document.id);
+                                getUsersPastTripsStreamSnapshots();
+                                Navigator.pop(context, 'OK');
+                              },
+                              child: const Text('Ya'),
+                            ),
+                          ],
+                        ),
+                      ),
+                  child: Icon(Icons.delete)),
+              trailing: GestureDetector(
+                child: Icon(Icons.edit),
+                onTap: () {
+                  productName.text = product.name;
+                  productStock.text = product.stock.toString();
+                  showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      builder: (BuildContext context) {
+                        return Padding(
+                          padding: MediaQuery.of(context).viewInsets,
+                          child: Container(
+                            height: 200,
+                            color: Colors.white38,
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 24),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  TextField(
+                                    controller: productName,
+                                    decoration: InputDecoration(
+                                        labelText: "Nama Produk"),
+                                    autocorrect: false,
+                                  ),
+                                  TextField(
+                                    controller: productStock,
+                                    decoration: InputDecoration(
+                                        labelText: "Stok Produk"),
+                                    autocorrect: false,
+                                    autofocus: true,
+                                    keyboardType: TextInputType.number,
+                                  ),
+                                  SizedBox(
+                                    height: 15,
+                                  ),
+                                  ElevatedButton(
+                                    child: Text(
+                                      'Ubah',
+                                      style: blackTextFont.copyWith(
+                                        fontSize: 22,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    onPressed: () async {
+                                      FirebaseFunction.updateProduct(
+                                          id: document.id,
+                                          name: productName.text,
+                                          stock: productStock.text);
+                                      getUsersPastTripsStreamSnapshots();
+                                      Navigator.pop(context);
+                                    },
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      });
+                },
               ),
             ),
           ],
