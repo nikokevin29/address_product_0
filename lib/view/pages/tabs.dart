@@ -13,11 +13,13 @@ class Tabs extends StatefulWidget {
 class _TabsState extends State<Tabs> with SingleTickerProviderStateMixin {
   int bottomNavBarIndex = 0;
   late TabController controller;
+  late ScrollController _scrollViewController;
   late DateTime currentBackPressTime;
   @override
   void initState() {
     controller = new TabController(
         length: 3, vsync: this, initialIndex: widget.bottomNavBarIndex);
+    _scrollViewController = ScrollController(initialScrollOffset: 0.0);
     super.initState();
   }
 
@@ -34,6 +36,7 @@ class _TabsState extends State<Tabs> with SingleTickerProviderStateMixin {
   @override
   void dispose() {
     controller.dispose();
+    _scrollViewController.dispose();
     super.dispose();
   }
 

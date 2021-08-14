@@ -8,6 +8,9 @@ class CigarettesPage extends StatefulWidget {
 }
 
 class _CigarettesPageState extends State<CigarettesPage> {
+  TextEditingController productName = TextEditingController();
+  TextEditingController productStock = TextEditingController();
+  TextEditingController _searchController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -16,30 +19,144 @@ class _CigarettesPageState extends State<CigarettesPage> {
       ),
       body: SingleChildScrollView(
         child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 24),
-          child: StreamBuilder<QuerySnapshot>(
-            stream:
-                FirebaseFirestore.instance.collection('product').snapshots(),
-            builder: (context, snapshot) {
-              if (!snapshot.hasData) {
-                return Center(child: CircularProgressIndicator());
-              } else {
-                return ListView(
-                  shrinkWrap: true,
-                  children:
-                      snapshot.data!.docs.map((DocumentSnapshot document) {
-                    Map<String, dynamic> data =
-                        document.data()! as Map<String, dynamic>;
-                    return Card(
-                      child: ListTile(
-                        title: Text(data['name']),
-                        subtitle: Text(data['stock'].toString()),
-                      ),
-                    );
-                  }).toList(),
-                );
-              }
-            },
+          padding: EdgeInsets.symmetric(horizontal: 24, vertical: 5),
+          child: Column(
+            children: [
+              TextField(
+                controller: _searchController,
+                decoration: InputDecoration(
+                  prefix: Icon(Icons.search),
+                ),
+              ),
+              StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('product')
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return Center(child: CircularProgressIndicator());
+                  } else {
+                    return ListView.builder(
+                        shrinkWrap: true,
+                        physics: ClampingScrollPhysics(),
+                        itemCount: snapshot.data!.docs.length,
+                        itemBuilder: (context, index) {
+                          return Card(
+                            child: ListTile(
+                              onLongPress: () => showDialog<String>(
+                                context: context,
+                                builder: (BuildContext context) => AlertDialog(
+                                  title: const Text('Hapus Produk'),
+                                  content: const Text(
+                                      'Apakah anda yakin ingin menghapus produk ini ?'),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.pop(context, 'Cancel'),
+                                      child: const Text('Batal'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        FirebaseFunction.deleteProduct(
+                                            id: snapshot.data!.docs[index].id);
+                                        Navigator.pop(context, 'OK');
+                                      },
+                                      child: const Text('Ya'),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              title: Text(snapshot.data!.docs[index]['name']),
+                              subtitle: Text(snapshot.data!.docs[index]['stock']
+                                  .toString()),
+                              trailing: GestureDetector(
+                                child: Icon(Icons.edit),
+                                onTap: () {
+                                  productName.text =
+                                      snapshot.data!.docs[index]['name'];
+                                  productStock.text = snapshot
+                                      .data!.docs[index]['stock']
+                                      .toString();
+                                  showModalBottomSheet(
+                                      context: context,
+                                      isScrollControlled: true,
+                                      builder: (BuildContext context) {
+                                        return Padding(
+                                          padding:
+                                              MediaQuery.of(context).viewInsets,
+                                          child: Container(
+                                            height: 200,
+                                            color: Colors.white38,
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 24),
+                                              child: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  TextField(
+                                                    controller: productName,
+                                                    decoration: InputDecoration(
+                                                        labelText:
+                                                            "Nama Produk"),
+                                                    autocorrect: false,
+                                                  ),
+                                                  TextField(
+                                                    controller: productStock,
+                                                    decoration: InputDecoration(
+                                                        labelText:
+                                                            "Stok Produk"),
+                                                    autocorrect: false,
+                                                    autofocus: true,
+                                                    keyboardType:
+                                                        TextInputType.number,
+                                                  ),
+                                                  SizedBox(
+                                                    height: 15,
+                                                  ),
+                                                  ElevatedButton(
+                                                    child: Text(
+                                                      'Ubah',
+                                                      style: blackTextFont
+                                                          .copyWith(
+                                                        fontSize: 22,
+                                                        color: Colors.white,
+                                                      ),
+                                                    ),
+                                                    onPressed: () {
+                                                      //Function Submit here
+
+                                                      FirebaseFunction
+                                                          .updateProduct(
+                                                              id: snapshot
+                                                                  .data!
+                                                                  .docs[index]
+                                                                  .id,
+                                                              name: productName
+                                                                  .text,
+                                                              stock:
+                                                                  productStock
+                                                                      .text);
+                                                      Navigator.pop(context);
+                                                    },
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        );
+                                      });
+                                },
+                              ),
+                            ),
+                          );
+                        });
+                  }
+                },
+              ),
+            ],
           ),
         ),
       ),
@@ -47,28 +164,8 @@ class _CigarettesPageState extends State<CigarettesPage> {
         onPressed: () {
           Get.to(() => AddCigarettes());
         },
-        child: Icon(
-          Icons.plus_one,
-        ),
+        child: FaIcon(FontAwesomeIcons.plus),
       ),
     );
   }
 }
-
-// Widget buildItem(BuildContext context, DocumentSnapshot document) {
-//   return Card(
-//     child: Padding(
-//       padding: EdgeInsets.symmetric(horizontal: 16),
-//       child: Row(
-//         children: [
-//           Title(
-//             color: Colors.black,
-//             child: Text(
-//               document.data['name'],
-//             ),
-//           )
-//         ],
-//       ),
-//     ),
-//   );
-// }
