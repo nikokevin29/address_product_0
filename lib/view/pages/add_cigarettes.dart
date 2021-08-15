@@ -12,8 +12,6 @@ class _AddCigarettesState extends State<AddCigarettes> {
   TextEditingController productStock = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    FirebaseFirestore firestore = FirebaseFirestore.instance;
-    CollectionReference product = firestore.collection('product');
     return Scaffold(
       appBar: AppBar(
         title: Text('Tambah Rokok Baru'),
@@ -47,16 +45,11 @@ class _AddCigarettesState extends State<AddCigarettes> {
                       Get.snackbar(
                           'Warning!!', 'Nama dan Stok tidak boleh kosong');
                     } else {
-                      product.add({
-                        'name': productName.text,
-                        'stock': int.tryParse(productStock.text) ?? 0,
-                        'created_at': DateTime.now(),
-                      });
+                      FirebaseFunction.createProduct(
+                          name: productName.text, stock: productStock.text);
                       productStock.text = '';
                       productName.text = '';
-
                       Get.back();
-                      setState(() {});
                     }
                   },
                 ),

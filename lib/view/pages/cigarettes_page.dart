@@ -19,7 +19,6 @@ class _CigarettesPageState extends State<CigarettesPage> {
   @override
   void initState() {
     super.initState();
-    getUsersPastTripsStreamSnapshots();
     _searchController.addListener(_onSearchChanged);
   }
 
@@ -253,11 +252,12 @@ class _CigarettesPageState extends State<CigarettesPage> {
             ListTile(
               title: Text(
                 product.name,
-                style: blackTextFont.copyWith(fontSize: 22),
+                overflow: TextOverflow.ellipsis,
+                style: blackTextFont.copyWith(),
               ),
               subtitle: Text(
                 product.stock.toString(),
-                style: blackTextFont.copyWith(fontSize: 22),
+                style: blackTextFont.copyWith(fontSize: 16),
               ),
               leading: GestureDetector(
                   onTap: () => showDialog<String>(
@@ -273,7 +273,7 @@ class _CigarettesPageState extends State<CigarettesPage> {
                             ),
                             TextButton(
                               onPressed: () {
-                                FirebaseFunction.deleteProduct(id: document.id);
+                                FirebaseFunction.deleteProduct(id: document.id,name: product.name);
                                 getUsersPastTripsStreamSnapshots();
                                 Navigator.pop(context, 'OK');
                               },
