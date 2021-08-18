@@ -26,3 +26,4 @@ part 'tabs.dart';
 part 'cigarettes_page.dart';
 part 'address_page.dart';
 part 'add_cigarettes.dart';
+part 'search_minyak.dart';

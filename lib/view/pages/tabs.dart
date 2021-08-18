@@ -76,7 +76,7 @@ class _TabsState extends State<Tabs> with SingleTickerProviderStateMixin {
           child: TabBarView(controller: controller, children: [
             DashboardPage(),
             CigarettesPage(),
-            AddressPage(),
+            AddressPage(controller: controller),
           ])),
     );
   }

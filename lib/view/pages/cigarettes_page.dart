@@ -59,7 +59,7 @@ class _CigarettesPageState extends State<CigarettesPage> {
   }
 
   getUsersPastTripsStreamSnapshots() async {
-    var data = await FirebaseFirestore.instance.collection('product').get();
+    var data = await FirebaseFirestore.instance.collection('product').where('stock',isNotEqualTo: -1).orderBy('stock',descending: true).get();
     setState(() {
       _allResults = data.docs;
     });
