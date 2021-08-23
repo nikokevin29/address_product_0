@@ -23,9 +23,11 @@ class _TabsState extends State<Tabs> with SingleTickerProviderStateMixin {
     super.initState();
   }
 
+
+
   Future<bool> onWillPop() {
     DateTime now = DateTime.now();
-    if (now.difference(currentBackPressTime) > Duration(seconds: 2)) {
+    if (now.difference(currentBackPressTime) < Duration(seconds: 2)) {
       currentBackPressTime = now;
       Get.snackbar('Exit ?', 'Tap Exit Again for Exit');
       return Future.value(false);
@@ -35,11 +37,11 @@ class _TabsState extends State<Tabs> with SingleTickerProviderStateMixin {
 
   @override
   void dispose() {
+    //Hive.box('transaction').close();
     controller.dispose();
     _scrollViewController.dispose();
     super.dispose();
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

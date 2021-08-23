@@ -1,4 +1,4 @@
-part of 'models.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ProductModel {
   final String name;

@@ -1,4 +1,5 @@
-import 'package:address_product/models/models.dart';
+import 'package:address_product/models/product_model.dart';
+import 'package:address_product/models/product_address_model.dart';
 import 'package:address_product/services/services.dart';
 import 'package:address_product/shared/shared.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -7,9 +8,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
+import 'package:address_product/view/widgets/widgets.dart';
 
 import 'package:esc_pos_utils_plus/esc_pos_utils.dart';
 import 'package:esc_pos_utils_plus/gbk_codec/gbk_codec.dart';

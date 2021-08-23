@@ -92,6 +92,10 @@ class _CigarettesPageState extends State<CigarettesPage> {
                 controller: _searchController,
                 decoration: InputDecoration(
                   prefix: Icon(Icons.search),
+                  suffixIcon: IconButton(
+                    onPressed: _searchController.clear,
+                    icon: Icon(Icons.clear),
+                  ),
                 ),
               ),
               ListView.builder(
